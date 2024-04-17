@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Date2024_04_17 {
+public class Date2024_04_17 { // boj 1541
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
