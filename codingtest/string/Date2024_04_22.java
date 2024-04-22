@@ -2,10 +2,8 @@ package codingtest.string;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.util.*;
 
-public class Date20204_04_22 { //boj 1213
+public class Date2024_04_22 { //boj 1213
 
 
     public static int[] alphabet = new int[26];
