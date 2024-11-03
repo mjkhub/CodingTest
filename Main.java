@@ -6,29 +6,23 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static StringBuilder sb = new StringBuilder();
-    public static String[] arr;
-    public static int N ;
-    public static void main(String[] args) throws IOException { //boj 1032
+    public static void main(String[] args) throws IOException { //boj 1357
 
-        N = Integer.parseInt(br.readLine());
-        arr = new String[N];
-        for(int i=0; i<N; i++) arr[i] = br.readLine();
+        String[] s = br.readLine().split(" ");
 
-        int stringLength = arr[0].length();
-        for(int i =0; i<stringLength; i++){
-            char c = compareCharAtIndex(i);
-            sb.append(c);
-        }
-        System.out.println(sb);
-
+        int x = Integer.parseInt(s[0]);
+        int y = Integer.parseInt(s[1]);
+        System.out.println( rev((rev(x) + rev(y))));
     }
 
-    public static char compareCharAtIndex(int index){
-        char c = arr[0].charAt(index);
-        for (int i=1; i<N; i++){
-            if( c != arr[i].charAt(index)) return '?';
+    public static int rev(int n){
+
+        int reverse = 0;
+        while(n > 0){
+            reverse = reverse * 10 + n % 10;
+            n /=10;
         }
-        return c;
+        return reverse;
     }
+
 }
