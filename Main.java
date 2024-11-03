@@ -1,30 +1,34 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
-public class Main { // boj 1546
+public class Main { // boj 1094
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws IOException { //boj 1357
 
-        int n = Integer.parseInt(br.readLine());
+        int x = Integer.parseInt(br.readLine());
+        if( x == 64){
+            System.out.println(1);
+            return;
+        }
 
-        int[] gradeList = Arrays.stream(br.readLine().split(" "))
-                .mapToInt(Integer::parseInt)
-                .toArray();
+        int shortBar = 64;
+        int barSum = 0;
+        int count = 0;
 
-        int max = Arrays.stream(gradeList)
-                .max()
-                .orElse(0);
+        while(barSum < x){
+            shortBar = shortBar / 2;
+            if(barSum + shortBar > x){ // do nothing
 
-        double avg = Arrays.stream(gradeList)
-                .mapToDouble(gr -> ((double) gr / max) * 100)
-                .average()
-                .orElse(0.0);
+            }else{
+                barSum += shortBar;
+                count++;
+            }
+        }
 
-        System.out.println(avg);
+        System.out.println(count);
 
     }
 
