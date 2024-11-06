@@ -2,46 +2,54 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Main { // boj 1051
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) throws IOException { //boj 2869
-        String[] s = br.readLine().split(" ");
-        int N = Integer.parseInt(s[0]);
-        int M = Integer.parseInt(s[1]);
-        int[][] arr = new int[N][M];
+    public static void main(String[] args) throws IOException { //boj 1141
 
-        for(int i=0; i<N; i++){
-            String[] line = br.readLine().split("");
-            for(int j=0; j<M; j++){
-                arr[i][j] = Integer.parseInt(line[j]);
-            }
+        int N = Integer.parseInt(br.readLine());
+
+        int answer = 0;
+
+        List<String> arr = new ArrayList<>();
+        for(int i =0; i<N; i++) {
+            String word = br.readLine();
+            if(!arr.contains(word)) arr.add(word);
         }
 
-        int minN_M = N < M ? N : M;
-        int answerLength = 1;
-
-
-        label: for(int k=2; k<=minN_M; k++){
-            for(int i=0; i<=N-k; i++){
-                for(int j=0; j<= M-k; j++){
-                    if(arr[i][j] == arr[i][j+k-1] &&
-                            arr[i][j+k-1] == arr[i+k-1][j+k-1] &&
-                            arr[i+k-1][j+k-1] == arr[i+k-1][j]){
-                        answerLength = k;
-                        continue label;
+        for(int i=0; i<arr.size(); i++){
+            String a = arr.get(i);
+            boolean goodToAdd = true;
+            for(int j=0; j<arr.size(); j++){
+                if(i != j) {
+                    String b = arr.get(j);
+                    if(checkPrefix(a,b) ){
+                        goodToAdd = false;
+                        continue;
                     }
                 }
             }
+            if(goodToAdd) answer++;
         }
-        System.out.println(answerLength*answerLength);
 
-
+        System.out.println(answer);
 
     }
 
+
+
+    public static boolean checkPrefix(String a, String b){ //a가 b의 prefix 인지 확인
+        if(a.length() > b.length()) return false;
+
+        boolean isPrefix = true;
+        for(int i=0; i<a.length(); i++){
+            if(a.charAt(i) != b.charAt(i)) isPrefix =false;
+        }
+        return isPrefix;
+    }
 }
