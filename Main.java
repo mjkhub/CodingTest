@@ -1,33 +1,44 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-    public static void main(String[] args) throws IOException { // boj 1929
+    public static boolean[] visit;
+    public static int[] buf;
+    public static int N;
+    public static int M;
+    public static void main(String[] args) throws IOException { // boj 15649
 
         String[] s = br.readLine().split(" ");
-        int m = Integer.parseInt(s[0]);
-        int n = Integer.parseInt(s[1]);
-
-        StringBuilder sb = new StringBuilder();
-        for(int i=m; i<=n; i++){
-            if(isPrimeNumber(i)) sb.append(i).append('\n');
-        }
-        System.out.println(sb);
+        N = Integer.parseInt(s[0]);
+        M = Integer.parseInt(s[1]);
+        buf = new int[M];
+        visit = new boolean[N+1];
+        dfs(0);
     }
 
+    public static void dfs(int depth){
 
-    public static boolean isPrimeNumber(int n){
-        if( n == 1) return false;
+        if(depth == M ){
+            StringBuilder sb = new StringBuilder();
+            for(int value : buf)
+                sb.append(value).append(' ');
+            System.out.println(sb);
+            return;
+        }// base case
 
-        int sqrt = (int)Math.sqrt(n);
-        for(int i=2;i <=sqrt; i++){
-            if( n % i ==0) return false;
+        for(int i=1; i<=N; i++){
+            if(!visit[i]){
+                visit[i] = true;
+                buf[depth] = i;
+                dfs(depth + 1);
+                visit[i] = false;
+            }
         }
-        return true;
     }
+
 
 }
