@@ -6,22 +6,33 @@ import java.util.*;
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static int M;
 
-    public static Set<String> s = new HashSet<>();
-    public static void main(String[] args) throws IOException { // boj 14425;
+    public static boolean[] arr;
 
-        String[] data = br.readLine().split(" ");
-        int n = Integer.parseInt(data[0]);
-        int m = Integer.parseInt(data[1]);
-        for(int i=0; i<n; i++) s.add(br.readLine());
+    public static void main(String[] args) throws IOException {
+        M = Integer.parseInt(br.readLine());
+        arr = new boolean[4];
+        arr[1] = true;
 
-        int count =0;
-        for(int i=0; i<m; i++){
-            if(s.contains(br.readLine()))
-                count++;
+        for(int i=0; i<M; i++){
+            String[] s = br.readLine().split(" ");
+            int cup1 = Integer.parseInt(s[0]);
+            int cup2 = Integer.parseInt(s[1]);
+            swap(cup1, cup2);
         }
-
-        System.out.println(count);
+        for(int i=1; i<=3; i++){
+            if(arr[i]) System.out.println(i);
+        }
     }
+    public static void swap(int cup1, int cup2){
+
+        boolean temp = arr[cup1];
+        arr[cup1] = arr[cup2];
+        arr[cup2] = temp;
+    }
+
+
+
 
 }
