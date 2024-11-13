@@ -4,37 +4,65 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    public static int[][] arr = new int[100][100];
-    public static void main(String[] args) throws IOException { // boj 2563
+
+    public static int count = 0;
+    public static void main(String[] args) throws IOException { // boj 10157
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int n = Integer.parseInt(br.readLine());
+        String[] s = br.readLine().split(" ");
+        int c = Integer.parseInt(s[0]);
+        int r = Integer.parseInt(s[1]);
+        int k = Integer.parseInt(br.readLine());
 
-        for(int i=0; i<n; i++){
-            String[] s = br.readLine().split(" ");
-            markBlack(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-        }
+        int x = 1; int y = 0; // current pos
+        boolean found = false;
 
-        int blackCellCount = 0;
-        for(int i=0; i<100; i++){
-            for(int j=0; j<100; j++){
-                if(arr[i][j] == 1)
-                    blackCellCount++;
+        label: while(r >=2){
+
+            for(int i=1; i<=r; i++){ // up
+                count++;
+                y++;
+                if(k == count) {
+                    found = true;
+                    break label;
+                }
             }
+
+            for(int i=1; i<=c-1; i++){ // right
+                count++;
+                x++;
+                if(k == count) {
+                    found = true;
+                    break label;
+                }
+            }
+            for(int i=1; i<=r-1; i++){ // down
+                count++;
+                y--;
+                if(k == count) {
+                    found = true;
+                    break label;
+                }
+            }
+            for(int i=1; i<=c-2; i++){ // left
+                count++;
+                x--;
+                if(k == count) {
+                    found = true;
+                    break label;
+                }
+            }
+            r -=2;
+            c -=2;
         }
 
-        System.out.println(blackCellCount);
+        if(found) System.out.println(x+ " "+ y);
+        else System.out.println(0);
     }
 
-    public static void markBlack(int leftDistance, int downDistance){
 
-        int row = 99-downDistance; // index 니까..
-        int col = leftDistance;
-        for(int i=row; i>row-10; i--) {
-            for (int j = col; j < col + 10; j++) {
-                arr[i][j] = 1;
-            }
-        }
-    }
+
+
+
 
 }
