@@ -4,35 +4,37 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
+    public static int[][] arr = new int[100][100];
+    public static void main(String[] args) throws IOException { // boj 2563
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int M;
+        int n = Integer.parseInt(br.readLine());
 
-    public static void main(String[] args) throws IOException {
-        String[] s = br.readLine().split(" ");
-        int k = Integer.parseInt(s[1]);
-
-        int[] array =
-                Arrays.stream(br.readLine().split(",")).mapToInt(Integer::parseInt).toArray();
-        for(int i=0; i<k; i++) genArray(array);
-
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<array.length-k; i++){
-            sb.append(array[i]);
-            if(i!= array.length-k-1)
-                sb.append(',');
+        for(int i=0; i<n; i++){
+            String[] s = br.readLine().split(" ");
+            markBlack(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
         }
-        System.out.println(sb);
+
+        int blackCellCount = 0;
+        for(int i=0; i<100; i++){
+            for(int j=0; j<100; j++){
+                if(arr[i][j] == 1)
+                    blackCellCount++;
+            }
+        }
+
+        System.out.println(blackCellCount);
     }
 
-    public static void genArray(int[] array){
-        for(int i=0; i<array.length-1; i++){
-            array[i] = array[i+1] - array[i];
+    public static void markBlack(int leftDistance, int downDistance){
+
+        int row = 99-downDistance; // index 니까..
+        int col = leftDistance;
+        for(int i=row; i>row-10; i--) {
+            for (int j = col; j < col + 10; j++) {
+                arr[i][j] = 1;
+            }
         }
     }
-
-
-
-
 
 }
