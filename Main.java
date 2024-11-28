@@ -1,40 +1,39 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Scanner;
 
 public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static StringBuilder sb = new StringBuilder();
-    public static int N, M;
-    public static int[] arr, res;
-    public static void main(String[] args) throws IOException{
-        // TODO Auto-generated method stub
-        N = Integer.parseInt(br.readLine());
-        arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-        Arrays.sort(arr); //정렬
+        // 입력 받기
+        int K = sc.nextInt(); // 이미 가지고 있는 랜선의 개수
+        int N = sc.nextInt(); // 필요한 랜선의 개수
+        int[] lanLengths = new int[K];
 
-        M = Integer.parseInt(br.readLine());
-        res = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-
-        for(int i=0; i<M; i++) {
-            if(binarySearch(0, N-1, res[i]) != null)
-                sb.append('1').append('\n');
-            else
-                sb.append('0').append('\n');
+        long maxLength = 0;
+        for (int i = 0; i < K; i++) {
+            lanLengths[i] = sc.nextInt();
+            maxLength = Math.max(maxLength, lanLengths[i]);
         }
-        System.out.println(sb);
-    }
 
-    public static Integer binarySearch(int low, int high, int k) {
-        while(low<=high){
-            int mid = (low + high)/2;
-            if(arr[mid] > k) high = mid-1;
-            else if(arr[mid] < k) low = mid +1 ;
-            else return k;
+        long low = 1, high = maxLength;
+        long result = 0;
+
+        while (low <= high) {
+            long mid = (low + high) / 2;
+
+            long totalLans = 0;
+            for (int length : lanLengths) {
+                totalLans += length / mid;
+            }
+
+            if (totalLans >= N) {
+                result = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
         }
-        return null; // 못 찾았다는 의미
-    }
 
+        System.out.println(result);
+    }
 }
