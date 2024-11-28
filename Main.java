@@ -1,39 +1,46 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
 
-        // 입력 받기
-        int K = sc.nextInt(); // 이미 가지고 있는 랜선의 개수
-        int N = sc.nextInt(); // 필요한 랜선의 개수
-        int[] lanLengths = new int[K];
-
-        long maxLength = 0;
-        for (int i = 0; i < K; i++) {
-            lanLengths[i] = sc.nextInt();
-            maxLength = Math.max(maxLength, lanLengths[i]);
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static int[] arr;
+    public static int n;
+    public static int m;
+    public static int max = 0;
+    public static void main(String[] args) throws IOException {
+        String[] s = br.readLine().split(" ");
+        n = Integer.parseInt(s[0]); m = Integer.parseInt(s[1]);
+        String[] inputs = br.readLine().split(" ");
+        arr = new int[n];
+        for(int i=0; i<n; i++){
+            arr[i] = Integer.parseInt(inputs[i]);
+            max = Math.max(max, arr[i]);
         }
 
-        long low = 1, high = maxLength;
-        long result = 0;
+        int low = 1;
+        int high = max;
+        int h = 0;
 
-        while (low <= high) {
-            long mid = (low + high) / 2;
-
-            long totalLans = 0;
-            for (int length : lanLengths) {
-                totalLans += length / mid;
+        while(low<=high){
+            int mid = low + (high - low)/ 2; // h
+            long treeSize = slice(mid);
+            if(treeSize >= m) {
+                low = mid +1;
+                h = mid;
             }
-
-            if (totalLans >= N) {
-                result = mid;
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
+            else high = mid -1;
         }
+        System.out.println(h);
+    }
 
-        System.out.println(result);
+    public static long slice(int h){
+        long sum = 0;
+        for(int i=0; i<n; i++){
+            if(arr[i] >= h) sum += arr[i] - h;
+        }
+        return sum;
     }
 }
