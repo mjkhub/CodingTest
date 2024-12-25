@@ -1,53 +1,82 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     public static int n;
-    public static int[] arr;
-    public static boolean[] mistake;
-    public static int[] sum;
 
+    public static List<Integer> queue;
 
-    public static void main(String[] args) throws IOException { // ok 근데 이거 코딩 스타일이 너무 안좋은 것 같음
+    public static int answer = 0;
+    
 
-        n = Integer.parseInt(br.readLine());
-        arr = new int[n+2];
-        mistake = new boolean[n+2];
-        sum = new int[n+2];
-        arr[n+1] = Integer.MAX_VALUE;
+    public static void main(String[] args) throws IOException {
 
-        String[] input = br.readLine().split(" ");
-        for(int i=n; i>=1; i--){
-            int level = Integer.parseInt(input[i-1]);
-            if(level > arr[i+1]){
-                mistake[i] = true;
+        String[] s = br.readLine().split(" ");
+        int n = Integer.parseInt(s[0]);
+        int m = Integer.parseInt(s[1]);
+
+        int[] arr = new int[m];
+        String[] s1 = br.readLine().split(" ");
+        for(int i=0; i<m; i++)
+            arr[i] = Integer.parseInt(s1[i]);
+
+        queue = new ArrayList<>();
+        for(int i=1; i<=n; i++) queue.add(i);
+
+        for(int target : arr){
+            int leftCount = countLeft(target);
+            int rightCunt = countRight(target);
+            if(leftCount < rightCunt) pickLeft(target);
+            else pickRight(target);
+        }
+
+        System.out.println(answer);
+
+    }
+
+    public static int countLeft(int target){
+
+        return queue.indexOf(target);
+    }
+
+    public static int countRight(int target){
+
+        return queue.size()-queue.indexOf(target);
+    }
+
+    public static void pickLeft(int target){
+        while(true){
+            Integer value = queue.remove(0);
+            if(value != target){
+                answer++;
+                queue.add(value);
+            }else{
+                break;
             }
-            arr[i] = level;
         }
-        for(int i=1; i<=n; i++){
-            sum[i] = sum[i-1] + (mistake[i]?1:0);
-        }
-
-        int q = Integer.parseInt(br.readLine());
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<q; i++){
-            String[] s = br.readLine().split(" ");
-            int start = Integer.parseInt(s[0]);
-            int end = Integer.parseInt(s[1]);
-            sb.append(getSum(start, end)).append('\n');
-        }
-        System.out.println(sb);
     }
 
-    public static int getSum(int start, int end){
-        int answer = sum[end] - sum[start-1];
-        if(mistake[end]) answer -=1;
-        return answer;
+    public static void pickRight(int target){
+        while(true){
+            Integer value = queue.remove(queue.size()-1);
+            if(value != target){
+                answer++;
+                queue.add(0,value);
+            }else{
+                answer++;
+                break;
+            }
+        }
     }
+
+
 
 }
