@@ -1,82 +1,71 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static int n;
-
-    public static List<Integer> queue;
-
-    public static int answer = 0;
-    
-
+    public static List<Integer> numbers = new ArrayList<>();
     public static void main(String[] args) throws IOException {
 
-        String[] s = br.readLine().split(" ");
-        int n = Integer.parseInt(s[0]);
-        int m = Integer.parseInt(s[1]);
+        int t = Integer.parseInt(br.readLine());
 
-        int[] arr = new int[m];
-        String[] s1 = br.readLine().split(" ");
-        for(int i=0; i<m; i++)
-            arr[i] = Integer.parseInt(s1[i]);
+        StringBuilder sb = new StringBuilder();
+        while( t-- > 0 ){
+            boolean reversed = false;
+            boolean error = false;
+            String[] commands = br.readLine().split("");
+            int n = Integer.parseInt(br.readLine());
+            String arrayInput = br.readLine();
 
-        queue = new ArrayList<>();
-        for(int i=1; i<=n; i++) queue.add(i);
-
-        for(int target : arr){
-            int leftCount = countLeft(target);
-            int rightCunt = countRight(target);
-            if(leftCount < rightCunt) pickLeft(target);
-            else pickRight(target);
-        }
-
-        System.out.println(answer);
-
-    }
-
-    public static int countLeft(int target){
-
-        return queue.indexOf(target);
-    }
-
-    public static int countRight(int target){
-
-        return queue.size()-queue.indexOf(target);
-    }
-
-    public static void pickLeft(int target){
-        while(true){
-            Integer value = queue.remove(0);
-            if(value != target){
-                answer++;
-                queue.add(value);
-            }else{
-                break;
+            // 빈 배열 처리 수정
+            if (n == 0) {
+                numbers = new ArrayList<>();
+            } else {
+                String[] stringNumbers = arrayInput.substring(1, arrayInput.length() - 1).split(",");
+                for (String num : stringNumbers) {
+                    numbers.add(Integer.parseInt(num));
+                }
             }
-        }
-    }
 
-    public static void pickRight(int target){
-        while(true){
-            Integer value = queue.remove(queue.size()-1);
-            if(value != target){
-                answer++;
-                queue.add(0,value);
-            }else{
-                answer++;
-                break;
+            for(String command: commands){
+                if(command.equals("R")){
+                    reversed = !reversed;
+                }else{ // D
+                    if(numbers.isEmpty()){
+                        error = true;
+                        break;
+                    }else{
+                        if(reversed) numbers.remove(numbers.size()-1);
+                        else numbers.remove(0);
+                    }
+                }
             }
+            if(error) {
+                sb.append("error").append('\n');
+
+            }else{
+                sb.append("[");
+                if(reversed){
+                    for(int i=numbers.size()-1; i>=0; i--){
+                        sb.append(numbers.get(i));
+                        if(i!=0)
+                            sb.append(",");
+                    }
+                }else{
+                    for(int i=0; i< numbers.size(); i++){
+                        sb.append(numbers.get(i));
+                        if(i!=numbers.size()-1)
+                            sb.append(",");
+                    }
+                }
+                sb.append("]\n");
+            }
+            numbers = new ArrayList<>();
         }
+
+        System.out.println(sb);
     }
-
-
-
 }
