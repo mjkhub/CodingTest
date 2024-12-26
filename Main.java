@@ -7,65 +7,75 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static List<Integer> numbers = new ArrayList<>();
     public static void main(String[] args) throws IOException {
 
-        int t = Integer.parseInt(br.readLine());
+        String[] s = br.readLine().split(" ");
+        int n = Integer.parseInt(s[0]);
+        int w = Integer.parseInt(s[1]); // 다리 길이
+        int l = Integer.parseInt(s[2]); // 최대 하중
+        String[] s2 = br.readLine().split(" ");
+        Queue<Integer> queue = new LinkedList<>();
+        for (String input : s2)
+            queue.offer(Integer.parseInt(input));
 
-        StringBuilder sb = new StringBuilder();
-        while( t-- > 0 ){
-            boolean reversed = false;
-            boolean error = false;
-            String[] commands = br.readLine().split("");
-            int n = Integer.parseInt(br.readLine());
-            String arrayInput = br.readLine();
+        int time = 1;
+        Bridge br = new Bridge(w,l);
+        br.add(queue.poll());
 
-            // 빈 배열 처리 수정
-            if (n == 0) {
-                numbers = new ArrayList<>();
-            } else {
-                String[] stringNumbers = arrayInput.substring(1, arrayInput.length() - 1).split(",");
-                for (String num : stringNumbers) {
-                    numbers.add(Integer.parseInt(num));
+        while(true){
+            time++;
+            br.periodicJob();
+            if(!queue.isEmpty()){
+                if(br.isAddable(queue.peek())){
+                    br.add(queue.poll());
                 }
             }
+            if(queue.isEmpty() && br.isEmpty())
+                break;
+        }
+        System.out.println(time);
 
-            for(String command: commands){
-                if(command.equals("R")){
-                    reversed = !reversed;
-                }else{ // D
-                    if(numbers.isEmpty()){
-                        error = true;
-                        break;
-                    }else{
-                        if(reversed) numbers.remove(numbers.size()-1);
-                        else numbers.remove(0);
-                    }
-                }
-            }
-            if(error) {
-                sb.append("error").append('\n');
 
-            }else{
-                sb.append("[");
-                if(reversed){
-                    for(int i=numbers.size()-1; i>=0; i--){
-                        sb.append(numbers.get(i));
-                        if(i!=0)
-                            sb.append(",");
-                    }
-                }else{
-                    for(int i=0; i< numbers.size(); i++){
-                        sb.append(numbers.get(i));
-                        if(i!=numbers.size()-1)
-                            sb.append(",");
-                    }
-                }
-                sb.append("]\n");
-            }
-            numbers = new ArrayList<>();
+    }
+
+    static class Bridge{
+        int currentWeight=0; //현재 하중
+        int w; // 다리 길이
+        int l; // 최대 하중
+        int[] arr;
+
+        public Bridge(int w, int l){
+            arr = new int[w];
+            this.w = w;
+            this.l = l;
         }
 
-        System.out.println(sb);
+        public void periodicJob(){
+            currentWeight -= arr[0]; //delete
+            for(int i=1; i<=w-1; i++)
+                arr[i-1] = arr[i];
+            arr[w-1] = 0; //move
+        }
+
+        public boolean isAddable(int weight){
+            if(currentWeight + weight <= l && arr[w-1] == 0) return true;
+            else return false;
+        }
+
+        public void add(int weight){
+            arr[w-1] = weight;
+            currentWeight += weight;
+        }
+
+        public boolean isEmpty(){
+            for(int i=0; i<w; i++)
+                if(arr[i] != 0) return false;
+            return currentWeight == 0;
+        }
+
+
     }
+
+
+
 }
