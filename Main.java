@@ -34,8 +34,6 @@ public class Main {
                 break;
         }
         System.out.println(time);
-
-
     }
 
     static class Bridge{
@@ -49,33 +47,24 @@ public class Main {
             this.w = w;
             this.l = l;
         }
-
         public void periodicJob(){
             currentWeight -= arr[0]; //delete
             for(int i=1; i<=w-1; i++)
                 arr[i-1] = arr[i];
             arr[w-1] = 0; //move
         }
-
         public boolean isAddable(int weight){
-            if(currentWeight + weight <= l && arr[w-1] == 0) return true;
+            if(currentWeight + weight <= l) return true;
             else return false;
         }
-
         public void add(int weight){
             arr[w-1] = weight;
             currentWeight += weight;
         }
-
         public boolean isEmpty(){
-            for(int i=0; i<w; i++)
-                if(arr[i] != 0) return false;
             return currentWeight == 0;
         }
 
-
     }
-
-
 
 }
