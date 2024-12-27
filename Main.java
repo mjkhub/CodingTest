@@ -7,28 +7,19 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static StringBuilder sb = new StringBuilder();
+    public static Queue<Integer> queue = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
-        String[] s = br.readLine().split(" ");
-        int n = Integer.parseInt(s[0]);
-        int k = Integer.parseInt(s[1]);
+        int n = Integer.parseInt(br.readLine());
+        for(int i=1; i<=n; i++)
+            queue.offer(i);
 
-        List<Integer> arr = new LinkedList<>();
-        for(int i=1; i<=n; i++) arr.add(i);
-
-        sb.append("<");
-        int index = k-1;
-        while(!arr.isEmpty()){
-            Integer remove = arr.remove(index);
-            sb.append(remove);
-            if(arr.isEmpty())
-                break;
-            sb.append(", ");
-            index = (index-1 +k) % arr.size();
+        while(queue.size()!=1){
+            queue.poll(); //remove
+            queue.offer(queue.poll());
         }
-        sb.append(">");
-        System.out.println(sb);
+        System.out.println(queue.poll());
+
     }
 
 
