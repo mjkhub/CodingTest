@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,46 +7,130 @@ import java.util.List;
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int[][] mapping = {{0,2,0,1}, {2,1,3,0}, {0,3,2,1}, {1,0,1,3}};
+
+    public static int[][] arr;
+    public static Queue<D> dQueue = new LinkedList<>();
+    public static int n, k, l;
+    public static int[][] directions = {{0,1}, {1,0},{0,-1},{-1,0}};
+
     public static void main(String[] args) throws IOException {
-        int n = Integer.parseInt(br.readLine());
-        String s = br.readLine();
-        if(n==1){
-            System.out.println(s);
-            return;
-        }
-        
-        List<Integer> arr = new ArrayList<>();
-        for(int i=0; i<s.length(); i++){
-            char c = s.charAt(i);
-            if(c == 'A') arr.add(0);
-            else if( c=='G') arr.add(1);
-            else if( c== 'C') arr.add(2);
-            else arr.add(3);
+
+        n = Integer.parseInt(br.readLine());
+        k = Integer.parseInt(br.readLine());
+        arr = new int[n+1][n+1]; //0: nope 1: apple
+
+        for(int i=0; i<k; i++){
+            String[] s = br.readLine().split(" ");
+            int row = Integer.parseInt(s[0]);
+            int col = Integer.parseInt(s[1]);
+            arr[row][col] = 1;
         }
 
-        while(arr.size()>1){ // 이게 왜 arr.size() !=1 이면 안될까!
-            int lastIndex = arr.size()-1;
-            int lastBeforeIndex = lastIndex-1;
-
-            int m1 = getMapping(arr.get(lastBeforeIndex), arr.get(lastIndex));
-            arr.remove(lastIndex);
-            arr.remove(lastBeforeIndex);
-            arr.add(m1);
+        l = Integer.parseInt(br.readLine());
+        for(int i=0; i<l; i++){
+            String[] s = br.readLine().split(" ");
+            dQueue.offer(new D(Integer.parseInt(s[0]),s[1]));
         }
 
-        int value = arr.get(0);
-        if(value == 0) System.out.println("A");
-        else if( value == 1) System.out.println("G");
-        else if( value == 2) System.out.println("C");
-        else System.out.println("T");
+        int time = 0;
+        Snake snake = new Snake();
+        while(true){
+            time++;
+            boolean isGoodToGo = snake.move();
+            if(!isGoodToGo){
+                break;
+            }
+            if(!dQueue.isEmpty() && dQueue.peek().t == time){ //safe
+                snake.changeHeadDirection(dQueue.poll().d);
+            }
+
+        }
+        System.out.println(time);
+
     }
 
-    public static int getMapping(int lastIndex, int lastBeforeIndex){
-        return mapping[lastBeforeIndex][lastIndex];
+    static class Snake{
+        List<Body> body = new ArrayList<>(); // 0 head & tail;
+
+        public Snake(){
+            body.add(new Body(1,1, directions[0]));
+        }
+
+        public boolean move(){
+            Body head = body.get(body.size() - 1);
+            int row = head.row + head.direction[0];
+            int col =  head.col + head.direction[1];
+
+            if(!(1 <=row && row <=n && 1<=col && col<=n)) // 벽에 충돌
+                return false;
+
+            for(Body part: body){ // 몸 충돌
+                if(part.row == row && part.col == col)
+                    return false;
+            }
+
+            body.add(new Body(row, col, head.direction));
+            if(arr[row][col] == 1) //apple;
+                arr[row][col] = 0;
+            else //normal
+                body.remove(0); // 꼬리 제거
+
+            return true;
+        }
+
+        public void changeHeadDirection(String d){
+            Body head = body.get(body.size() - 1);
+            int index;
+            if(d.equals("D")){ // 오른쪽
+                index = getRightDirectionIndex(head.direction);
+            }else{ // 왼쪽
+                index = getLeftDirectionIndex(head.direction);
+            }
+            head.direction = directions[index];
+        }
+
+        private int getRightDirectionIndex(int[] direction){
+            for(int i = 0; i<4 ; i++){
+                if(directions[i][0] == direction[0] &&
+                        directions[i][1] == direction[1] )
+                    return (i+1) % 4;
+            }
+            throw new RuntimeException("인덱스 에러 오른쪽 변환");
+        }
+        private int getLeftDirectionIndex(int[] direction){
+            for(int i = 0; i<4 ; i++){
+                if(directions[i][0] == direction[0] &&
+                        directions[i][1] == direction[1] ){
+                    int index = i-1;
+                    if(index <0) return index + 4;
+                    else return index;
+                }
+            }
+            throw new RuntimeException("인덱스 에러 왼쪽 변환");
+        }
     }
 
+    static class Body{
+        int row;
+        int col;
+        int[] direction;
 
+        public Body(int row, int col, int[] direction){
+            this.row = row;
+            this.col = col;
+            this.direction = direction;
+        }
+    }
+
+    static class D{
+        int t; //time
+        String d; //direction
+
+        public D(int t, String d ){
+            this.t = t;
+            this.d = d;
+        }
+    }
 
 
 
