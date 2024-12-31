@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
-import java.util.List;
+import java.util.stream.*;
 
 public class Main {
 
@@ -10,40 +9,32 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        int n = Integer.parseInt(br.readLine());
-        int k = Integer.parseInt(br.readLine());
+        String[] s = br.readLine().split(" ");
+        int n = Integer.parseInt(s[0]);
+        int m = Integer.parseInt(s[1]);
+        int[] arr = IntStream.rangeClosed(0, n).toArray();
 
-        int maxExpect = -1; int expectIndex = 0;
 
-        int[] cake = new int[n+1];
-        int[] count = new int[k+1];
-        for(int i=1; i<=k; i++){
-            String[] s = br.readLine().split(" ");
-            int start = Integer.parseInt(s[0]);
-            int end = Integer.parseInt(s[1]);
+        while(m-->0){
+            String[] s1 = br.readLine().split(" ");
+            int start = Integer.parseInt(s1[0]);
+            int end = Integer.parseInt(s1[1]);
 
-            if(maxExpect < end-start+1){
-                expectIndex = i;
-                maxExpect = end-start +1;
+            while(start<=end){
+                int temp = arr[start];
+                arr[start] = arr[end];
+                arr[end] = temp;
+                start++;
+                end--;
             }
 
-            for(int j=start; j<=end; j++){
-                if(cake[j] == 0){
-                    cake[j] = i;
-                    count[i] +=1;
-                }
-            }
         }
-        int actualMax = count[1]; int actualIndex = 1;
-
-        for(int i = 1; i < count.length; i++){
-            if(actualMax < count[i]){
-                actualMax = count[i];
-                actualIndex = i;
-            }
+        StringBuilder sb = new StringBuilder();
+        for(int i=1; i<=n; i++){
+            sb.append(arr[i]).append(' ');
         }
-        System.out.println(expectIndex);
-        System.out.println(actualIndex);
+
+        System.out.println(sb);
 
     }
 
