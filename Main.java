@@ -1,40 +1,49 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.stream.*;
+import java.util.Arrays;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+    public static int[] arr;
     public static void main(String[] args) throws IOException {
 
-        String[] s = br.readLine().split(" ");
-        int n = Integer.parseInt(s[0]);
-        int m = Integer.parseInt(s[1]);
-        int[] arr = IntStream.rangeClosed(0, n).toArray();
+        arr = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
 
 
-        while(m-->0){
-            String[] s1 = br.readLine().split(" ");
-            int start = Integer.parseInt(s1[0]);
-            int end = Integer.parseInt(s1[1]);
-
-            while(start<=end){
-                int temp = arr[start];
-                arr[start] = arr[end];
-                arr[end] = temp;
-                start++;
-                end--;
+        boolean answer = false;
+        while(!answer){
+            for(int i=0; i<4; i++){
+                if(arr[i] > arr[i+1]){
+                    swap(i, i+1);
+                    print();
+                }
             }
-
-        }
-        StringBuilder sb = new StringBuilder();
-        for(int i=1; i<=n; i++){
-            sb.append(arr[i]).append(' ');
+            answer = isAnswer();
         }
 
-        System.out.println(sb);
+    }
+
+    public static boolean isAnswer(){
+        for(int i=1; i<=5; i++)
+            if(arr[i-1] != i) return false;
+        return true;
+    }
+
+    public static void swap(int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    public static void print(){
+        for(int i : arr)
+            System.out.print(i+" ");
+        System.out.println();
 
     }
 
