@@ -1,114 +1,51 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-    public static int[][] directions = {{-1,0}, {0,1}, {1,0},{0,-1}}; // 북 동 남 서
-
     public static int n, m;
-
-    public static int[][] map;
+    public static char[][] map;
+    public static String[][] boards = {{"WBWBWBWB","BWBWBWBW", "WBWBWBWB","BWBWBWBW", "WBWBWBWB","BWBWBWBW", "WBWBWBWB","BWBWBWBW"},
+            {"BWBWBWBW","WBWBWBWB", "BWBWBWBW","WBWBWBWB", "BWBWBWBW","WBWBWBWB", "BWBWBWBW","WBWBWBWB"}}; // 0: white 1: black
     public static void main(String[] args) throws IOException {
         String[] s = br.readLine().split(" ");
         n = Integer.parseInt(s[0]); m = Integer.parseInt(s[1]);
-
-        String[] robot = br.readLine().split(" ");
-        Robot rb =
-                new Robot(Integer.parseInt(robot[0]), Integer.parseInt(robot[1]), Integer.parseInt(robot[2]));
-
-        map = new int[n][m];
+        map = new char[n][m];
         for(int i=0; i<n; i++){
-            String[] input = br.readLine().split(" ");
-            for(int j=0; j<m; j++){
-                map[i][j] = Integer.parseInt(input[j]);
-            }
+            String input = br.readLine();
+            for(int j=0; j<m; j++)
+                map[i][j] = input.charAt(j);
         }
 
-        while(true){
-            rb.clean();
-            boolean isThereCleanedUp = rb.isThereCleanedUp();
-            if(!isThereCleanedUp){
-                boolean success = rb.moveBack();
-                if(!success)
-                    break;
-            }else{
-                rb.changeDirectionAndMoveForward();
+        int min = Integer.MAX_VALUE;
+
+        int maxRow = n-8;
+        int maxCol = m-8;
+
+        for(int i=0; i<=maxRow; i++){
+            for(int j=0; j<=maxCol; j++){
+                int white = countDiff(i,j,0);
+                int black = countDiff(i,j,1);
+                min = Math.min(Math.min(white, black),min);
             }
-
         }
-
-        System.out.println(rb.getCount());
+        System.out.println(min);
 
     }
 
-
-    static class Robot{
-        int row;
-        int col;
-        int dir;
+    public static int countDiff(int sR, int sC, int boardIndex){
+        String[] board = boards[boardIndex];
         int count = 0;
-
-        public Robot(int row, int col, int dir){
-            this.row = row;
-            this.col = col;
-            this.dir = dir;
-        }
-
-        public void clean(){
-            if(map[row][col] == 0 ){ //clean
-                map[row][col] = -1;
-                count++;
+        for(int i=sR; i<sR+8; i++){
+            for(int j=sC; j<sC+8; j++){
+                if(map[i][j] != board[i-sR].charAt(j-sC))count++;
             }
         }
-
-        public boolean isThereCleanedUp(){
-            for(int[] direction: directions){
-                int newRow = row + direction[0];
-                int newCol = col + direction[1];
-                if(0<=newRow && newRow < n && 0<=newCol && newCol < m && map[newRow][newCol] == 0)
-                    return true;
-            }
-            return false;
-
-        }
-
-        public boolean moveBack(){
-            int[] backDir = directions[( dir + 2 ) % 4];
-            int newRow = row + backDir[0];
-            int newCol = col + backDir[1];
-            if(0<=newRow && newRow < n && 0<=newCol && newCol < m && map[newRow][newCol] != 1){
-                row = newRow;
-                col = newCol;
-                return true;
-            }
-            return false;
-        }
-
-        public void changeDirectionAndMoveForward(){
-            dir = ( dir + 3 ) % 4;
-            int newRow = row + directions[dir][0];
-            int newCol = col + directions[dir][1];
-
-            if(0<=newRow && newRow < n && 0<=newCol && newCol < m && map[newRow][newCol] == 0 ){
-                row = newRow;
-                col = newCol;
-            }
-
-        }
-
-
-
-
-
-
-        public int getCount(){
-            return this.count;
-        }
-
-
+        return count;
     }
+
 
 }
