@@ -1,58 +1,32 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.io.IOException;
 
 public class Main {
-
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-    public static int n;
-
-    public static List<Tuple> arr = new ArrayList<>();
     public static void main(String[] args) throws IOException {
-        n = Integer.parseInt(br.readLine());
-        for(int i=0; i<n; i++){
-            String[] s = br.readLine().split(" ");
-            arr.add(new Tuple(Integer.parseInt(s[0]),Integer.parseInt(s[1])));
-        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        boolean[][] grid = new boolean[101][101]; // 평면 그리드 (1 ~ 100)
+        int totalArea = 0;
 
-        Tuple answer = new Tuple(0,0);
-        long min = Long.MAX_VALUE;
-        for(int a=1; a<=100; a++){ // 브루트 포스
-            for(int b=1; b<=100; b++){
-                long rss = calculateRss(a,b);
-                if(rss < min){
-                    min = rss;
-                    answer.x = a;
-                    answer.y = b;
+        // 4개의 직사각형 입력 받기
+        for (int i = 0; i < 4; i++) {
+            String[] input = br.readLine().split(" ");
+            int x1 = Integer.parseInt(input[0]);
+            int y1 = Integer.parseInt(input[1]);
+            int x2 = Integer.parseInt(input[2]);
+            int y2 = Integer.parseInt(input[3]);
+
+            // 직사각형 영역에 해당하는 그리드 채우기
+            for (int x = x1; x < x2; x++) {
+                for (int y = y1; y < y2; y++) {
+                    if (!grid[x][y]) { // 아직 방문하지 않은 영역
+                        grid[x][y] = true;
+                        totalArea++;
+                    }
                 }
             }
         }
-        System.out.println(answer.x + " " + answer.y);
+
+        System.out.println(totalArea); // 총 면적 출력
     }
-
-    public static long calculateRss(int a, int b){
-        long rss = 0;
-        for(int i=0; i<n; i++){
-            Tuple tuple = arr.get(i);
-            int xi = tuple.x;
-            int yi = tuple.y;
-            int fx = a * xi + b;
-            rss += (long)(yi-fx) * (yi-fx); // overflow could occur
-        }
-        return rss;
-    }
-
-    static class Tuple{
-        int x;
-        int y;
-
-        public Tuple(int x, int y){
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-
 }
