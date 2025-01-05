@@ -1,32 +1,37 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.Stack;
 
 public class Main {
+
+    public static int count = 0;
+
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        boolean[][] grid = new boolean[101][101]; // 평면 그리드 (1 ~ 100)
-        int totalArea = 0;
+        int n = Integer.parseInt(br.readLine());
+        while(n-->0){
+            String s = br.readLine();
+            if(checkIsGoodWord(s)) count++;
+        }
+        System.out.println(count);
 
-        // 4개의 직사각형 입력 받기
-        for (int i = 0; i < 4; i++) {
-            String[] input = br.readLine().split(" ");
-            int x1 = Integer.parseInt(input[0]);
-            int y1 = Integer.parseInt(input[1]);
-            int x2 = Integer.parseInt(input[2]);
-            int y2 = Integer.parseInt(input[3]);
+    }
 
-            // 직사각형 영역에 해당하는 그리드 채우기
-            for (int x = x1; x < x2; x++) {
-                for (int y = y1; y < y2; y++) {
-                    if (!grid[x][y]) { // 아직 방문하지 않은 영역
-                        grid[x][y] = true;
-                        totalArea++;
-                    }
-                }
+    public static boolean checkIsGoodWord(String s){
+        int size = s.length();
+        if( size % 2 != 0) return false;
+        Stack<Character> stack = new Stack<>();
+        for(int i=0; i<size; i++){
+            char c = s.charAt(i);
+            if(stack.isEmpty()) stack.push(c);
+            else{ //
+                if(c != stack.peek()) stack.push(c);
+                else stack.pop();
             }
         }
-
-        System.out.println(totalArea); // 총 면적 출력
+        if(stack.isEmpty()) return true;
+        else return false;
     }
+
 }
