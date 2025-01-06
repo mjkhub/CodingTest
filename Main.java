@@ -6,33 +6,66 @@ import java.util.*;
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int[] arr;
+
+    public static int[] cards;
+    public static List<List<Integer>> answer;
+    public static int n;
+    public static int[] p, s;
     public static void main(String[] args) throws IOException {
+        n = Integer.parseInt(br.readLine());
+        answer = new ArrayList<>();
+        for(int i=0; i<3; i++) answer.add(new ArrayList<>());
 
-        arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-        int N = arr[0];int m = arr[1];
-        int M = arr[2];int T = arr[3];int R = arr[4];
+        cards = new int[n];
+        for(int i=0; i<n; i++) cards[i] = i;
 
-        int workOut = 0;
-        int totalTime = 0;
-        int X = m;
+        p = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        s = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
-        if(m + T > M){
-            System.out.println(-1);
+        makeAnswer();
+        if(isAnswer()){
+            System.out.println(0);
             return;
         }
-        while(workOut < N){
-            if( X + T <= M ){ //운동
-                X +=T;
-                workOut++;
 
-            }else{ // 무조건 휴식
-                X = Math.max(m, X-R);
+        int count =0;
+        while(true){
+            swap();
+            count++;
+            if(isAnswer())
+                break;
+            if(count == Integer.MAX_VALUE / 10000 ){ // 이게 맞나 싶긴한데 . . .
+                System.out.println(-1);
+                return;
             }
-            totalTime++;
         }
-        System.out.println(totalTime);
+        System.out.println(count);
 
+    }
+
+    public static void makeAnswer(){
+        for(int i=0; i<n; i++){
+            List<Integer> playerCards = answer.get(p[i]);
+            playerCards.add(i);
+        }
+    }
+
+    public static void swap(){
+        int[] swappedCards = new int[n];
+
+        for(int i=0; i<n; i++){
+            swappedCards[s[i]] = cards[i];
+        }
+        cards = swappedCards;
+    }
+
+
+    public static boolean isAnswer(){
+        for(int i=0; i<n; i++){
+            int playerNumber = i % 3;
+            if(!answer.get(playerNumber).contains(cards[i])) return false;
+        }
+        return true;
     }
 
 
