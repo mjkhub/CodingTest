@@ -3,8 +3,8 @@ import java.util.Collections;
 import java.util.Random;
 
 public class TimeComplexityComparison {
-    public static void main(String[] args) {
-        final int DATA_SIZE = 100_000;
+    public static void main(String[] args) { // 데이터 개수가 많아 질수록 이진 탐색이 압도적 -> 조회 탐색 알고리즘 이 중요
+        final int DATA_SIZE = 100_000_000;
         ArrayList<Integer> data = new ArrayList<>(DATA_SIZE);
         Random random = new Random();
 
