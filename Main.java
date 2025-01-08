@@ -1,51 +1,137 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static int n,m;
-    public static int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
-    public static boolean[][] visit;
-    public static int row = 0;
-    public static int col =0;
-    public static int dir = 0;
+    public static List<Circle> list = new ArrayList<>();
     public static void main(String[] args) throws IOException {
-        String[] s = br.readLine().split(" ");
-        n = Integer.parseInt(s[0]);
-        m = Integer.parseInt(s[1]);
 
-        visit = new boolean[n][m];
-        visit[0][0] = true;
-        int count =0;
+        for(int i=0; i<4; i++){
+            int[] arr = Arrays.stream(br.readLine().split("")).mapToInt(Integer::parseInt).toArray();
+            Circle circle = new Circle(arr);
+            list.add(circle);
+        }
 
-        while(true){
-            int nextRow = row + directions[dir][0];
-            int nextCol = col + directions[dir][1];
-            if(isGoodToGo(nextRow, nextCol)){
-                visit[nextRow][nextCol] = true;
-                row = nextRow;
-                col = nextCol;
-            }else{ //change direction
-                dir = (dir + 1) % 4 ;
-                count++;
-                nextRow = row + directions[dir][0]; // end case
-                nextCol = col + directions[dir][1];
-                if(!isGoodToGo(nextRow,nextCol))
-                    break;
+        int k = Integer.parseInt(br.readLine());
+
+        while(k-->0){
+            String[] s = br.readLine().split(" ");
+            int index = Integer.parseInt(s[0])-1;
+            int wise = Integer.parseInt(s[1]);
+
+            boolean[] visit = new boolean[4];
+            Queue<Job> queue = new LinkedList<>();
+            queue.add(new Job(index,wise));
+
+            while(!queue.isEmpty()){
+                Job job = queue.poll();
+                int idx = job.index;
+                visit[idx] = true;
+
+                if(idx == 0){
+                    Circle c0 = list.get(0);
+                    Circle c1 = list.get(1);
+                    if(c0.getRight() != c1.getLeft() && !visit[1]){
+                        queue.offer(new Job(1, job.wise*-1));
+                    }
+                    c0.move(job.wise);
+                }else if(idx == 3){
+                    Circle c0 = list.get(3);
+                    Circle c1 = list.get(2);
+                    if(c0.getLeft() != c1.getRight() && !visit[2]){
+                        queue.offer(new Job(2, job.wise*-1));
+                    }
+                    c0.move(job.wise);
+                }else{
+                    Circle c0 = list.get(job.index);
+                    Circle c1 = list.get(job.index-1);
+                    Circle c2 = list.get(job.index+1);
+
+                    if(c0.getLeft() != c1.getRight() && !visit[job.index-1]){
+                        queue.offer(new Job(job.index-1, job.wise*-1));
+                    }
+
+                    if(c0.getRight() != c2.getLeft() && !visit[job.index+1]){
+                        queue.offer(new Job(job.index+1, job.wise*-1));
+                    }
+                    c0.move(job.wise);
+                }
+
             }
 
-
         }
-        System.out.println(count-1);
+
+        int score =0;
+        for(int i=0; i<4; i++){
+            Circle circle = list.get(i);
+            int twelve = circle.get12();
+            if(twelve == 1){
+                int temp = 1;
+                for(int j=0; j<i; j++){
+                    temp *=2;
+                }
+                score+=temp;
+            }
+        }
+        System.out.println(score);
+    }
+
+
+    static class Circle{
+        int[] arr;
+
+        public Circle(int[] arr){
+            this.arr = arr;
+        }
+        public void move(int wise){
+            if(wise == 1) moveClock();
+            else moveUnClock();
+        }
+        private void moveClock(){
+            int[] temp = new int[8];
+            for(int i=0; i<8; i++){
+                temp[i] = arr[(i+7)%8];
+            }
+            arr = temp;
+        }
+
+        private void moveUnClock(){
+            int[] temp = new int[8];
+            for(int i=0; i<8; i++){
+                temp[i] = arr[(i+1)%8];
+            }
+            arr = temp;
+        }
+
+        public int getLeft(){
+            return arr[6];
+        }
+
+        public int getRight(){
+            return arr[2];
+        }
+        public int get12(){
+            return arr[0];
+        }
 
     }
 
-    public static boolean isGoodToGo(int row , int col){
-        return 0<=row && row < n && 0<=col && col < m && !visit[row][col];
+    static class Job{
+        int index;
+        int wise;
+
+        public Job(int index, int wise){
+            this.index = index;
+            this.wise = wise;
+        }
+
     }
+
+
 
 
 }
