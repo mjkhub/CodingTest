@@ -1,97 +1,105 @@
-import com.sun.security.jgss.GSSUtil;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static int n;
-    public static String content;
-    public static int[][] directions = {{0,1}, {1,0}, {0,-1}, {-1,0}}; // 0 ~ 3
-    public static int dir = 1;
+    public static Position king,rock;
 
-    public static int row=0, col=0; // 초기 좌표
-    public static List<Position> path = new ArrayList<>();
+    public static int[][] directions = { {0,1},{0,-1},{1,0},{-1,0},
+            {-1,1},{-1,-1},{1,1},{1,-1}};
+
+
     public static void main(String[] args) throws IOException {
-        n = Integer.parseInt(br.readLine());
-        content = br.readLine();
+        String[] s = br.readLine().split(" ");
+        int n = Integer.parseInt(s[2]);
 
-        path.add(new Position(row,col));
-        for(int i=0; i<n; i++){
-            char c = content.charAt(i);
-            if(c == 'F') move();
-            else changeDir(c);
+        king = getPos(s[0]);
+        rock = getPos(s[1]);
+
+        //init
+        while(n-->0){
+            String m = br.readLine();
+            move(m);
+        }
+        System.out.println(getStr(king));
+        System.out.println(getStr(rock));
+
+    }
+    public static Position getPos(String s){
+        return new Position('8' - s.charAt(1), s.charAt(0)-'A');
+    }
+
+    public static String getStr(Position pos){
+
+        StringBuilder sb = new StringBuilder(2);
+        sb.append((char) ('A'+pos.col));
+        sb.append( 8 - pos.row);
+        return sb.toString();
+    }
+
+
+    public static void move(String  m){
+        // 돌이 먼저 움직이고 킹이 움직이는 로직으로 짜는게 더 적합할지도 모르겠다.
+        // 근데 돌이 움직일 수 없으면 킹이 움직일 수 없다. 이건 문제에서 명확하게 드러나지 않음
+
+        int[] dir = getDir(m);
+
+        if(isValid(king.row+dir[0], king.col+dir[1])) {
+            king.row += dir[0];
+            king.col += dir[1];
         }
 
-        int min = 0;
-        int maxRow = 0;
-        int maxCol = 0;
-
-        for(int i=1; i<path.size(); i++){
-            Position p1 = path.get(min);
-            Position temp = path.get(i);
-            if(p1.row >= temp.row && p1.col >= temp.col)
-                min = i;
-        }
-
-        for(int i=0; i<path.size(); i++){
-            if( min == i ) continue;
-            Position m= path.get(min);
-            Position p = path.get(i);
-            int rowAbs = Math.abs(p.row - m.row);
-            int colAbs = Math.abs(p.col - m.col);
-            if( rowAbs > maxRow) maxRow = rowAbs;
-            if( colAbs > maxCol) maxCol = colAbs;
-        }
-        maxCol +=1;
-        maxRow +=1;
-        boolean[][] answer = new boolean[maxRow][maxCol];
-        while(!path.isEmpty()){
-            Position p = path.remove(0);
-            answer[p.row+ maxRow-1][p.col] = true;
-        }
-
-        for(int i=0; i<maxRow; i++){
-            for(int j=0; j<maxCol; j++){
-                System.out.print(answer[i][j]?'.':'#');
+        if (king.row == rock.row && king.col == rock.col){
+            if(isValid(rock.row+dir[0],rock.col+dir[1])){
+                rock.row +=dir[0];
+                rock.col +=dir[1];
+            }else{
+                king.row -= dir[0];
+                king.col -= dir[1];
             }
-            System.out.println();
         }
 
 
-
-
-
-
-
-
-
-
-
-
     }
 
-    public static void move(){
-        row = row + directions[dir][0];
-        col = col + directions[dir][1];
-        path.add(new Position(row,col));
+    public static boolean isValid(int row, int col){
+        return 0<=row && row<=7 && 0<=col && col<=7;
     }
 
-    public static void changeDir(char c){
-        if(c == 'R') dir = (dir + 1) % 4;
-        else dir = (dir + 3) % 4;
+    public static int[] getDir(String m){
+        if(m.equals("R")){
+            return directions[0];
+        }else if(m.equals("L")){
+            return directions[1];
+        }else if(m.equals("B")){
+            return directions[2];
+        }else if(m.equals("T")){
+            return directions[3];
+        }else if(m.equals("RT")){
+            return directions[4];
+        }else if(m.equals("LT")){
+            return directions[5];
+        }else if(m.equals("RB")){
+            return directions[6];
+        }else{ //LB
+            return directions[7];
+        }
     }
 
     static class Position{
         int row;
         int col;
+
         public Position(int row, int col){
             this.row = row;
             this.col = col;
         }
     }
+
+
+
+
 
 }
