@@ -8,50 +8,40 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+    public static int[][] map;
     public static void main(String[] args) throws IOException {
 
         String[] s = br.readLine().split(" ");
-        int n = Integer.parseInt(s[0]); int l = Integer.parseInt(s[1]);
+        int n = Integer.parseInt(s[0]); int m = Integer.parseInt(s[1]);
 
-        Sign[] map = new Sign[l]; // 0 ~ l
+        map = new int[100][100];
 
         for(int i=0; i<n; i++){
-            String[] line = br.readLine().split(" ");
-            int d = Integer.parseInt(line[0]);
-            int r = Integer.parseInt(line[1]);
-            int g = Integer.parseInt(line[2]);
-            Sign sign = new Sign(d, r, g);
-            map[d] = sign;
+            String[] coords = br.readLine().split(" ");
+            int x1 = Integer.parseInt(coords[0])-1; int y1 = Integer.parseInt(coords[1])-1;
+            int x2 = Integer.parseInt(coords[2])-1; int y2 = Integer.parseInt(coords[3])-1;
+            mark(x1, y1, x2, y2);
         }
 
-        int index = 0;
-        int time = 0;
-        while(index < l){ // index == l 는 다리의 끝까지 갔음을 의미함
-            if(map[index] == null ){
-                index++;
-            }else{ // there is a sign
-                Sign sign = map[index];
-                int period = sign.r + sign.g;
-                int mod = (time) % (sign.r + sign.g);
-                if(sign.r<= mod && mod < period) //means green
-                    index++;
+        int sum = 0;
+        for(int i=0; i<100; i++){
+            for(int j=0; j<100; j++){
+                if( map[i][j] > m)
+                    sum++;
             }
-            time++;
         }
-        System.out.println(time);
+        System.out.println(sum);
+
     }
 
-    static class Sign{
-        int d;
-        int r;
-        int g;
-
-        public Sign(int d, int r, int g){
-            this.d = d;
-            this.r = r;
-            this.g = g;
+    public static void mark(int x1, int y1, int x2, int y2){
+        for(int i=x1; i<=x2; i++){
+            for(int j=y1; j<=y2; j++){
+                map[i][j] += 1;
+            }
         }
     }
+
 
 
 
