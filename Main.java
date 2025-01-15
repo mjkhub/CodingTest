@@ -1,45 +1,44 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+    public static int[] arr;
+    public static int n;
     public static void main(String[] args) throws IOException {
 
-        int t = Integer.parseInt(br.readLine());
+        n = Integer.parseInt(br.readLine());
+        arr = new int[n+1];
+        for(int i=1; i<=n; i++)
+            arr[i] = Integer.parseInt(br.readLine());
+        //init
 
-        while(t-->0){
-            String[] s = br.readLine().split(" ");
-            int n = Integer.parseInt(s[0]);
-            int m = Integer.parseInt(s[1]);
-            int x = getInt(br.readLine().split(" "));
-            int y =  getInt(br.readLine().split(" "));
-
-            int[] arr = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-
-            int count =0;
-            for(int i=0; i<n; i++){ // start index
-                int z = 0 ;
-                for(int j=0; j<m; j++) {   // m 번
-                    z = z * 10 + arr[(i+j)%arr.length];
-                }
-                if(x<= z && z <=y)
-                    count++;
-            }
-            System.out.println(count);
+        int count = 0;
+        while(true){
+            int maxIndex = getMaxIndex();
+            if(maxIndex == 1)
+                break;
+            arr[1] +=1;
+            arr[maxIndex] -=1;
+            count++;
         }
+        System.out.println(count);
 
     }
 
-    public static int getInt(String[] input){
-       int number = 0;
-       for(int i=0; i<input.length; i++)
-           number = number * 10 + Integer.parseInt(input[i]);
-        return number;
+    public static int getMaxIndex(){
+        int maxIndex = 1;
+
+        for(int i=2; i<=n; i++){
+            if(arr[maxIndex] <= arr[i])
+                maxIndex = i;
+        }
+        return maxIndex;
     }
+
 
 
 }
