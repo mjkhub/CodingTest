@@ -6,39 +6,43 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static int[] arr;
-    public static int n;
+    public static int[] heap;
+    public static int totalNode;
+
+    public static String[] input;
+
     public static void main(String[] args) throws IOException {
+        int k = Integer.parseInt(br.readLine());
+        input = br.readLine().split(" ");
 
-        n = Integer.parseInt(br.readLine());
-        arr = new int[n+1];
-        for(int i=1; i<=n; i++)
-            arr[i] = Integer.parseInt(br.readLine());
-        //init
+        totalNode = (int)Math.pow(2,k)-1;
+        heap = new int[totalNode+1];
 
-        int count = 0;
-        while(true){
-            int maxIndex = getMaxIndex();
-            if(maxIndex == 1)
-                break;
-            arr[1] +=1;
-            arr[maxIndex] -=1;
-            count++;
+        fillNode(0, totalNode-1, 1);
+
+
+        StringBuilder sb = new StringBuilder();
+        int index = 1;
+        for(int i=1; i<=k; i++){ // 각 depth
+            int count = (int)Math.pow(2,i) / 2 ;
+            for(int j=0; j<count; j++){
+                sb.append(heap[index++]).append(' ');
+            }
+            sb.append('\n');
         }
-        System.out.println(count);
+        System.out.println(sb);
+
 
     }
 
-    public static int getMaxIndex(){
-        int maxIndex = 1;
+    public static void fillNode(int start, int end, int i){
+        int mid = (start + end )/ 2;
+        heap[i] = Integer.parseInt(input[mid]);
 
-        for(int i=2; i<=n; i++){
-            if(arr[maxIndex] <= arr[i])
-                maxIndex = i;
-        }
-        return maxIndex;
+        if(start < mid) fillNode(start, mid-1, i*2);
+        if(end > mid) fillNode(mid+1, end, i*2+1);
+        // base case 는 start = mid
+
     }
-
-
 
 }
