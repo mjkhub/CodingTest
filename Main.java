@@ -7,45 +7,90 @@ public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+    public static Student[] arr;
+    public static int n;
     public static void main(String[] args) throws IOException {
 
-        Stack<Task> stack = new Stack<>();
-        int n = Integer.parseInt(br.readLine());
-        int count = 0;
+        n = Integer.parseInt(br.readLine());
+        arr = new Student[n];
+        int k = Integer.parseInt(br.readLine());
+        int[] numbers = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
-        while(n-->0){
-            String[] s = br.readLine().split(" ");
-            int yes = Integer.parseInt(s[0]);
-            if(yes == 0){
-                if(!stack.isEmpty()){ //내가 부족한 부분
-                    Task t = stack.peek();
-                    t.time -=1;
-                    if(t.time == 0){
-                        count += t.score;
-                        stack.pop();
-                    }
-                }
-            }else{
-                int score = Integer.parseInt(s[1]);
-                int t = Integer.parseInt(s[2]);
-                if(t == 1)
-                    count += score;
-                else
-                    stack.push(new Task(score,t-1));
+        for(int i=0; i<k; i++){
+            int number = numbers[i];
+            int index = contains(number);
+            if(index != -1) // 이미 존재
+                arr[index].count +=1;
+            else{ //새로운 위치를 할당 받고 넣어야함
+                index = getMinIndex();
+                arr[index] = new Student(number);
+            }
+            updateTime(); // 시간 Up
+        }
+
+
+        List<Integer> answer = new ArrayList<>();
+
+        for(int i=0; i<n; i++){
+            if(arr[i] != null)
+                answer.add(arr[i].number);
+        }
+
+        Collections.sort(answer);
+        for(int i=0; i<answer.size(); i++)
+            System.out.print(answer.get(i)+" ");
+
+    }
+
+    public static int contains(int number){
+        for(int i=0; i<n; i++){
+            if(arr[i]!=null && arr[i].number==number)
+                return i;
+        }
+        return -1;
+    }
+
+    public static int getMinIndex(){
+        int minIndex = 0;
+        for(int i=0; i<n; i++){
+            if(arr[i] == null) return i;
+            else{
+                if(arr[minIndex].count > arr[i].count )
+                    minIndex = i;
+                else if(arr[minIndex].count == arr[i].count
+                && arr[minIndex].time < arr[i].time)
+                    minIndex = i;
             }
         }
-        System.out.println(count);
-
+        return minIndex;
+    }
+    public static void updateTime(){
+        for(int i=0; i<n; i++){
+            if(arr[i]!= null){
+                arr[i].updateTime();
+            }
+        }
     }
 
-    static class Task{
-        int score;
+    static class Student{
+        int number;
         int time;
+        int count;
 
-        public Task(int score, int time) {
-            this.score = score;
-            this.time = time;
+        public Student (int number){
+            this.number = number;
+            this.time = 0;
+            this.count = 1;
+        }
+
+        public void updateTime(){
+            time++;
+        }
+
+        public int getNumber(){
+            return number;
         }
 
     }
+
 }
