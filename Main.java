@@ -1,30 +1,64 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     public static int n;
-    public static List<Integer> player = new ArrayList<>();
 
-    public static int beforeIndex = 0;
+    public static String first;
+
+    public static int[] countArr;
+    public static int answer = 0;
+
     public static void main(String[] args) throws IOException {
 
         n = Integer.parseInt(br.readLine());
-        for(int i=1; i<=n; i++) player.add(i);
+        first = br.readLine();
+        countArr = getCountArr(first);
 
-        for(int i=0; i<n-1; i++){
-            long count = (long)Math.pow(i+1, 3);
-            int removeIndex = (int)((beforeIndex + count -1) % player.size());
-            player.remove(removeIndex);
-            beforeIndex = removeIndex;
+        while(n-->1){
+            String input = br.readLine();
+            if(isSimilar(input))
+                answer++;
         }
-        System.out.println(player.get(0));
+        System.out.println(answer);
 
+    }
+
+    public static boolean isSimilar(String input){
+        int[] inputArr = getCountArr(input);
+        int[] subArr = new int[26];
+
+        for(int i=0; i<26; i++)
+            subArr[i] = Math.abs(inputArr[i]-countArr[i]);
+
+        int oneCount = 0;
+
+        for(int i=0; i<26; i++){
+            if(subArr[i] > 1) return false;
+            else if(subArr[i] == 1)
+                oneCount +=1;
+        }
+
+        int lengthAbs = Math.abs(input.length() - first.length());
+        if(oneCount == 0 ) return true;
+        else if(oneCount == 1 && lengthAbs == 1 ) return true;
+        else if(oneCount == 2 && lengthAbs == 0) return true;
+        else return false;
+
+    }
+
+    public static int[] getCountArr(String input){
+        int[] countArr = new int[26];
+        for(int i=0; i<input.length(); i++){
+            char c = input.charAt(i);
+            countArr[c-'A'] += 1;
+        }
+        return countArr;
     }
 
 
