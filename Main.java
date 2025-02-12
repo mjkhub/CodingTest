@@ -1,29 +1,28 @@
-import com.sun.security.jgss.GSSUtil;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.*;
 
 public class Main {
-
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int n = Integer.parseInt(br.readLine());
-        int[] arr = new int[n];
-        for(int i=0; i<n; i++)
-            arr[i] = Integer.parseInt(br.readLine());
-        Arrays.sort(arr);
+        String[] input = br.readLine().split(" ");
+        long A = Long.parseLong(input[0]);
+        long B = Long.parseLong(input[1]);
 
-        int answer = 0 ;
-        int count =0;
-        for(int i=n-1; i>=0; i--){
+        int count = 1;
+
+        while (B > A) {
+            if (B % 2 == 0) {
+                B /= 2;
+            } else if (B % 10 == 1) {
+                B /= 10;
+            } else {
+                break;
+            }
             count++;
-            answer = Math.max(count*arr[i], answer);
         }
-        System.out.println(answer);
 
+        System.out.println((B == A) ? count : -1);
     }
-
 }
