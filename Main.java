@@ -5,44 +5,46 @@ import java.util.*;
 
 public class Main {
 
-    public static int n, m;
-
-    public static List<List<Integer>> graph = new ArrayList<>();
-    public static boolean[] visit;
+    public static Queue<Node> queue = new LinkedList<>();
+    public static boolean[] visit = new boolean[100_001]; // 0 ~ 100_000
+    public static int n, k;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         String[] s = br.readLine().split(" ");
         n = Integer.parseInt(s[0]);
-        m = Integer.parseInt(s[1]);
-        for(int i=0; i<=n; i++)
-            graph.add(new ArrayList<>());
-        visit = new boolean[n+1];
+        k = Integer.parseInt(s[1]);
 
-        for(int i=0; i<m; i++){
-            String[] input = br.readLine().split(" ");
-            int v1 = Integer.parseInt(input[0]);
-            int v2 = Integer.parseInt(input[1]);
-            graph.get(v1).add(v2);
-            graph.get(v2).add(v1);
-        }
+        queue.offer(new Node(n,0));
 
-        int count = 0;
+        while(!queue.isEmpty()){
+            Node node = queue.poll();
+            int value = node.value;
+            visit[value] = true;
 
-        for(int i=1; i<=n; i++){
-            if(!visit[i]){
-                count++;
-                dfs(i);
+            if(value == k){
+                System.out.println(node.time);
+                break;
             }
+            addQueue(value-1, node.time+1);
+            addQueue(value+1, node.time+1);
+            addQueue(value*2, node.time+1);
         }
-        System.out.println(count);
+
     }
 
-    public static void dfs(int v){
-        visit[v] = true;
-        for(int adjacent : graph.get(v)){
-            if(!visit[adjacent])
-                dfs(adjacent);
+    public static void addQueue(int value, int beforeTime){
+        if(0<= value && value <=100_000 && !visit[value])
+            queue.offer(new Node(value, beforeTime));
+    }
+
+    static class Node{
+        int value;
+        int time;
+
+        public Node(int value, int time){
+            this.value = value;
+            this.time = time;
         }
     }
 
