@@ -4,48 +4,76 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main {
+    public static StringBuilder sb = new StringBuilder();
+    public static char[] buf;
+    public static int l, c;
+    public static char[] list;
+    public static boolean[] visit = new boolean[26];
 
-    public static Queue<Node> queue = new LinkedList<>();
-    public static boolean[] visit = new boolean[100_001]; // 0 ~ 100_000
-    public static int n, k;
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         String[] s = br.readLine().split(" ");
-        n = Integer.parseInt(s[0]);
-        k = Integer.parseInt(s[1]);
+        l = Integer.parseInt(s[0]); // 암호 개수
+        c = Integer.parseInt(s[1]); // 사용 했을 문자
+        list = new char[c];
+        buf = new char[l];
+        String input = br.readLine();
+        for(int i=0; i<c; i++)
+            list[i] = input.charAt(i*2);
 
-        queue.offer(new Node(n,0));
+        Arrays.sort(list); // good idea
+        dfs(0);
 
-        while(!queue.isEmpty()){
-            Node node = queue.poll();
-            int value = node.value;
-            visit[value] = true;
+        System.out.println(sb);
 
-            if(value == k){
-                System.out.println(node.time);
-                break;
+
+    }
+
+    public static void dfs(int depth){
+        if(depth == l){
+            int[] arr = getCountArr(new String(buf)); //이거
+            if(arr[0]>=1 && arr[1]>=2){
+                for (char ch : buf)
+                    sb.append(ch);
+                sb.append('\n');
             }
-            addQueue(value-1, node.time+1);
-            addQueue(value+1, node.time+1);
-            addQueue(value*2, node.time+1);
+            return;
         }
 
-    }
-
-    public static void addQueue(int value, int beforeTime){
-        if(0<= value && value <=100_000 && !visit[value])
-            queue.offer(new Node(value, beforeTime));
-    }
-
-    static class Node{
-        int value;
-        int time;
-
-        public Node(int value, int time){
-            this.value = value;
-            this.time = time;
+        for(char ch : list){
+            if(!visit[ch-'a']){
+                visit[ch-'a'] = true;
+                buf[depth] = ch;
+                if(isOrdered(depth))
+                    dfs(depth+1);
+                visit[ch-'a'] = false;
+            }
         }
+    }
+
+    public static boolean isOrdered(int depth){ // 사전식
+        char prev = buf[0];
+        for(int i=1; i<=depth; i++){
+            if(prev > buf[i]) return false;
+            prev = buf[i];
+        }
+        return true;
+    }
+
+
+    public static int[] getCountArr(String str){ // 모음 & 자음
+        int[] arr = new int[2];
+        for(int i=0; i<str.length(); i++){
+            char c = str.charAt(i);
+            if( c == 'a' || c == 'e' || c== 'i' || c=='o' || c == 'u'){
+                arr[0] += 1;
+            }else{
+                arr[1] += 1;
+            }
+        }
+        return arr;
     }
 
 
