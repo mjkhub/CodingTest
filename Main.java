@@ -4,76 +4,81 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main {
-    public static StringBuilder sb = new StringBuilder();
-    public static char[] buf;
-    public static int l, c;
-    public static char[] list;
-    public static boolean[] visit = new boolean[26];
+
+    public static int n;
+    public static int[][] arr;
+    public static int[] buf;
+    public static int min = Integer.MAX_VALUE;
+
+    public static boolean[] visit;
+
+    public static List<Integer> numbers = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String[] s = br.readLine().split(" ");
-        l = Integer.parseInt(s[0]); // 암호 개수
-        c = Integer.parseInt(s[1]); // 사용 했을 문자
-        list = new char[c];
-        buf = new char[l];
-        String input = br.readLine();
-        for(int i=0; i<c; i++)
-            list[i] = input.charAt(i*2);
+        n = Integer.parseInt(br.readLine());
+        arr = new int[n+1][n+1]; // 1 ~ n 명의 정보
+        buf = new int[n/2];
+        visit = new boolean[n+1];
 
-        Arrays.sort(list); // good idea
-        dfs(0);
+        for(int i=1; i<=n; i++){
+            String[] str = br.readLine().split(" ");
+            for(int j=1; j<=n; j++){
+                arr[i][j] = Integer.parseInt(str[j-1]);
+            }
+            numbers.add(i);
+        }
 
-        System.out.println(sb);
 
+        dfs(1, 0);
+
+        System.out.println(min);
 
     }
 
-    public static void dfs(int depth){
-        if(depth == l){
-            int[] arr = getCountArr(new String(buf)); //이거
-            if(arr[0]>=1 && arr[1]>=2){
-                for (char ch : buf)
-                    sb.append(ch);
-                sb.append('\n');
-            }
+    public static void dfs(int idx, int depth){
+        if(depth == n / 2){ // basecase
+            List<Integer> group1 = new ArrayList<>();
+            List<Integer> group2 = new ArrayList<>();
+
+            for(int i=1; i<=n; i++){
+                if(existInBuf(i)) group1.add(i);
+                else group2.add(i);
+            } //split
+            int s1 = getScore(group1);
+            int s2 = getScore(group2);
+
+            min = Math.min(min, Math.abs(s1-s2));
             return;
         }
 
-        for(char ch : list){
-            if(!visit[ch-'a']){
-                visit[ch-'a'] = true;
-                buf[depth] = ch;
-                if(isOrdered(depth))
-                    dfs(depth+1);
-                visit[ch-'a'] = false;
-            }
+        buf[depth] = idx; //visit
+        for(int i=idx+1; i<=n+1; i++){
+            dfs(i,depth+1);
         }
+
+
     }
 
-    public static boolean isOrdered(int depth){ // 사전식
-        char prev = buf[0];
-        for(int i=1; i<=depth; i++){
-            if(prev > buf[i]) return false;
-            prev = buf[i];
+    public static boolean existInBuf(int integer){
+        for(int i=0; i<n/2; i++){
+            if(integer == buf[i])
+                return true;
         }
-        return true;
+        return false;
     }
 
-
-    public static int[] getCountArr(String str){ // 모음 & 자음
-        int[] arr = new int[2];
-        for(int i=0; i<str.length(); i++){
-            char c = str.charAt(i);
-            if( c == 'a' || c == 'e' || c== 'i' || c=='o' || c == 'u'){
-                arr[0] += 1;
-            }else{
-                arr[1] += 1;
+    public static int getScore(List<Integer> group){
+        int sum = 0;
+        for(int i=0; i<n/2; i++){
+            for(int j=0; j<n/2; j++){
+                if(i == j) continue;
+                sum += arr[group.get(i)][group.get(j)];
             }
         }
-        return arr;
+        return sum;
     }
 
 
