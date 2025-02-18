@@ -5,81 +5,57 @@ import java.util.*;
 
 public class Main {
 
-    public static int n;
-    public static int[][] arr;
-    public static int[] buf;
-    public static int min = Integer.MAX_VALUE;
+    public static int n, w;
 
+    public static List<List<Integer>> graph = new ArrayList<>();
     public static boolean[] visit;
-
-    public static List<Integer> numbers = new ArrayList<>();
+    public static int leafCount = 0;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        n = Integer.parseInt(br.readLine());
-        arr = new int[n+1][n+1]; // 1 ~ n 명의 정보
-        buf = new int[n/2];
+        String[] s = br.readLine().split(" ");
+        n = Integer.parseInt(s[0]); w = Integer.parseInt(s[1]);
+        for(int i=0; i<=n; i++)
+            graph.add(new ArrayList<>());
         visit = new boolean[n+1];
 
-        for(int i=1; i<=n; i++){
-            String[] str = br.readLine().split(" ");
-            for(int j=1; j<=n; j++){
-                arr[i][j] = Integer.parseInt(str[j-1]);
+        for(int i=0; i<n-1; i++){
+            String[] line = br.readLine().split(" ");
+            int v1 = Integer.parseInt(line[0]);
+            int v2 = Integer.parseInt(line[1]);
+            graph.get(v1).add(v2);
+            graph.get(v2).add(v1);
+        }
+        bfs(1);
+
+        System.out.println( (double) w / leafCount);
+
+
+    }
+
+    public static void bfs(int start){
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+
+        while(!queue.isEmpty()){
+            int v = queue.poll();
+            visit[v] = true;
+
+            boolean isLeaf = true;
+            for(int adj : graph.get(v)){
+                if(!visit[adj]){ //
+                    isLeaf = false;
+                    queue.offer(adj);
+                }
             }
-            numbers.add(i);
+            if(isLeaf)
+                leafCount++;
         }
-
-
-        dfs(1, 0);
-
-        System.out.println(min);
 
     }
 
-    public static void dfs(int idx, int depth){
-        if(depth == n / 2){ // basecase
-            List<Integer> group1 = new ArrayList<>();
-            List<Integer> group2 = new ArrayList<>();
-
-            for(int i=1; i<=n; i++){
-                if(existInBuf(i)) group1.add(i);
-                else group2.add(i);
-            } //split
-            int s1 = getScore(group1);
-            int s2 = getScore(group2);
-
-            min = Math.min(min, Math.abs(s1-s2));
-            return;
-        }
-
-        buf[depth] = idx; //visit
-        for(int i=idx+1; i<=n+1; i++){
-            dfs(i,depth+1);
-        }
-
-
-    }
-
-    public static boolean existInBuf(int integer){
-        for(int i=0; i<n/2; i++){
-            if(integer == buf[i])
-                return true;
-        }
-        return false;
-    }
-
-    public static int getScore(List<Integer> group){
-        int sum = 0;
-        for(int i=0; i<n/2; i++){
-            for(int j=0; j<n/2; j++){
-                if(i == j) continue;
-                sum += arr[group.get(i)][group.get(j)];
-            }
-        }
-        return sum;
-    }
 
 
 }
