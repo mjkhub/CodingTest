@@ -5,60 +5,67 @@ import java.util.*;
 
 public class Main {
 
-    public static int n, m, k;
-    public static int[][] arr;
-    public static int[][] directions = {{-1,0},{0,1},{1,0},{0,-1}};
-    public static int max = -1;
+    public static int n;
+    public static int rootNode;
+    public static List<List<Integer>> graph = new ArrayList<>();
+    public static boolean[] visit;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String[] s = br.readLine().split(" ");
-        n = Integer.parseInt(s[0]); m = Integer.parseInt(s[1]);
-        k = Integer.parseInt(s[2]);
+        n = Integer.parseInt(br.readLine());
+        for(int i=0; i<n; i++)
+            graph.add(new ArrayList<>());
+        visit = new boolean[n];
 
-        arr = new int[n][m];
+        int[] parents = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
-        for(int i=0; i<k; i++){
-            String[] line = br.readLine().split(" ");
-            int row = Integer.parseInt(line[0])-1;
-            int col = Integer.parseInt(line[1])-1;
-            arr[row][col] = 1;
-        }
-
-        for(int i=0; i<n; i++){
-            for(int j=0; j<m; j++){
-                if(arr[i][j] == 1)
-                    max = Math.max(bfs(new int[]{i,j}),max);
+        for(int node = 0; node < n; node++) {
+            int parent = parents[node];
+            if (parent == -1) {
+                rootNode = node;
+            } else {
+                graph.get(parent).add(node);
             }
         }
 
-        System.out.println(max);
+
+        int K = Integer.parseInt(br.readLine());
+
+        if (K == rootNode) {
+            System.out.println(0);
+            return;
+        }
+
+        visit[K] = true;
+        int leafCount = bfs(rootNode);
+
+        System.out.println(leafCount);
 
     }
-
-    public static int bfs(int[] start){
-        Queue<int[]> queue = new LinkedList<>();
+    public static int bfs(int start){
+        Queue<Integer> queue = new LinkedList<>();
         queue.offer(start);
-        arr[start[0]][start[1]] = 0;
+        visit[start] = true;
 
-        int count = 0;
+        int leafCount = 0;
         while(!queue.isEmpty()){
-            int[] v = queue.poll();
-            count++;
-            for(int[] dir : directions){
-                int newRow = v[0] + dir[0];
-                int newCol = v[1] + dir[1];
-                if(0<= newRow && newRow < n && 0<=newCol && newCol < m && arr[newRow][newCol]==1 ){
-                    queue.add(new int[]{newRow, newCol});
-                    arr[newRow][newCol] = 0; // 큐에 중복으로 넣지 않도록 -> 이게 안지켜지면 메모리초과가 발생함
+            int v = queue.poll();
+
+            boolean isLeaf = true;
+            for(int adjacent : graph.get(v)){
+                if(!visit[adjacent]){
+                    queue.offer(adjacent);
+                    visit[adjacent] = true;
+                    isLeaf = false;
                 }
             }
-
+            if(isLeaf)
+                leafCount++;
         }
 
-        return count;
+        return leafCount;
     }
 
 
