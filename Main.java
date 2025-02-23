@@ -1,71 +1,46 @@
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
-    public static int n;
-    public static int rootNode;
-    public static List<List<Integer>> graph = new ArrayList<>();
-    public static boolean[] visit;
-
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        while(true){
+            String[] s = br.readLine().split(" ");
+            int n = Integer.parseInt(s[0]);
+            int m = Integer.parseInt(s[1]);
+            if(n==0 && m==0) break;
 
-        n = Integer.parseInt(br.readLine());
-        for(int i=0; i<n; i++)
-            graph.add(new ArrayList<>());
-        visit = new boolean[n];
-
-        int[] parents = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-
-        for(int node = 0; node < n; node++) {
-            int parent = parents[node];
-            if (parent == -1) {
-                rootNode = node;
-            } else {
-                graph.get(parent).add(node);
-            }
-        }
-
-
-        int K = Integer.parseInt(br.readLine());
-
-        if (K == rootNode) {
-            System.out.println(0);
-            return;
-        }
-
-        visit[K] = true;
-        int leafCount = bfs(rootNode);
-
-        System.out.println(leafCount);
-
-    }
-    public static int bfs(int start){
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
-        visit[start] = true;
-
-        int leafCount = 0;
-        while(!queue.isEmpty()){
-            int v = queue.poll();
-
-            boolean isLeaf = true;
-            for(int adjacent : graph.get(v)){
-                if(!visit[adjacent]){
-                    queue.offer(adjacent);
-                    visit[adjacent] = true;
-                    isLeaf = false;
+            Map<Integer, Integer> playerMap = new HashMap<>();
+            for(int i=0; i<n; i++){
+                String[] line = br.readLine().split(" ");
+                for(int j=0; j<m; j++){
+                    int player = Integer.parseInt(line[j]);
+                    playerMap.put(player, playerMap.getOrDefault(player,0) + 1);
                 }
             }
-            if(isLeaf)
-                leafCount++;
-        }
 
-        return leafCount;
+            List<Map.Entry<Integer, Integer>> players = playerMap.entrySet().stream()
+                    .sorted(Comparator.comparingInt(Map.Entry<Integer, Integer>::getValue)
+                            .reversed()
+                            .thenComparing(Map.Entry<Integer,Integer>::getKey))
+                    .collect(Collectors.toList());
+
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(players.get(1).getKey()).append(' ');
+            int secondValue = players.get(1).getValue();
+
+            for(int i=2; i<players.size(); i++){ //이런 부분이 좀 지저분하다고 느껴질 수 있는데 중요한 포인트
+                if(players.get(i).getValue() == secondValue) sb.append(players.get(i).getKey()).append(' ');
+                else break;
+            }
+
+            System.out.println(sb);
+        }
     }
 
 
